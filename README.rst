@@ -30,7 +30,7 @@ You likely need to use ``sudo`` for the install unless you work in a
 `Python virtual environment`_ or use the ``--user`` option to
 ``pip``. Will soon be on `PyPI`_.
 
-![Demonstration screenshot](images/demo.png?raw=true)
+.. image:: images/demo.png?raw=true
 
 :copyright: © 2016 Sam Brightman
 :license: Mozilla Public License version 2.0, see LICENSE for more details.
