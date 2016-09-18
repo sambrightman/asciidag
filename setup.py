@@ -1,3 +1,4 @@
+# noqa: D100
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, unicode_literals
@@ -7,7 +8,7 @@ import re
 from setuptools import setup, find_packages
 
 
-def main():
+def main():  # noqa: D103
     with open("asciidag/__init__.py") as init:
         metadata = dict(re.findall(r"__([a-z]+)__\s*=\s*['\"]([^'\"]*)['\"]",
                                    init.read()))
@@ -37,7 +38,7 @@ def main():
         ],
         tests_require=[
             "flake8",
-            # "flake8-pep257",
+            "flake8_docstrings",
             "pylint",
             "pylint-venv",
             "pytest-cov",

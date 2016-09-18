@@ -1,29 +1,37 @@
 # -*- coding: utf-8 -*-
+"""ASCII representation of directed acyclic graphs (DAGs).
+
+This is almost a straight port of Git's graph.c.
+
+"""
 
 from __future__ import absolute_import, unicode_literals
 from __future__ import division, print_function
+
 from enum import Enum
 import sys
 
 from .color import COLUMN_COLORS_ANSI
 from .sequence import walk_nodes, once, sort_in_topological_order
 
+__all__ = ('Graph',)
 
-# pylint: disable=too-few-public-methods
-class Column(object):
-    """A single column of output
+
+class Column(object):  # pylint: disable=too-few-public-methods
+    """A single column of output.
 
     Attributes:
         commit -- The parent commit of this column.
         color  -- The color to (optionally) print this column in.
                   This is an index into column_colors.
+
     """
+
     def __init__(self, commit, color):
         self.commit = commit
         self.color = color
 
 
-# pylint: disable=too-many-instance-attributes
 class GraphState(Enum):
     PADDING = 0
     SKIP = 1
@@ -33,100 +41,98 @@ class GraphState(Enum):
     COLLAPSING = 5
 
 
-class Graph(object):
-    # The commit currently being processed
-    #         struct commit *commit
-    #
-    # The number of interesting parents that this commit has.
-    # Note that this is not the same as the actual number of parents.
-    # This count excludes parents that won't be printed in the graph
-    # output, as determined by is_interesting().
-    #         int num_parents
-    #
-    # The width of the graph output for this commit.
-    # All rows for this commit are padded to this width, so that
-    # messages printed after the graph output are aligned.
-    #         int width
-    #
-    # The next expansion row to print
-    # when state is GraphState.PRE_COMMIT
-    #         int expansion_row
-    #
-    # The current output state.
-    # This tells us what kind of line next_line() should output.
-    #         enum graph_state state
-    #
-    # The output state for the previous line of output.
-    # This is primarily used to determine how the first merge line
-    # should appear, based on the last line of the previous commit.
-    #         enum graph_state prev_state
-    #
-    # The index of the column that refers to this commit.
-    # If none of the incoming columns refer to this commit,
-    # this will be equal to num_columns.
-    #         int commit_index
-    #
-    # The commit_index for the previously displayed commit.
-    # This is used to determine how the first line of a merge
-    # graph output should appear, based on the last line of the
-    # previous commit.
-    #         int prev_commit_index
-    #
-    # The maximum number of columns that can be stored in the columns
-    # and new_columns arrays. This is also half the number of entries
-    # that can be stored in the mapping and new_mapping arrays.
-    #         int column_capacity
-    #
-    # The number of columns (also called "branch lines" in some places)
-    #         int num_columns
-    #
-    # The number of columns in the new_columns array
-    #         int num_new_columns
-    #
-    # The number of entries in the mapping array
-    #         int mapping_size
-    #
-    # The column state before we output the current commit.
-    #         struct column *columns
-    #
-    # The new column state after we output the current commit.
-    # Only valid when state is GraphState.COLLAPSING.
-    #         struct column *new_columns
-    #
-    # An array that tracks the current state of each
-    # character in the output line during state GraphState.COLLAPSING.
-    # Each entry is -1 if this character is empty, or a non-negative
-    # integer if the character contains a branch line. The value of
-    # the integer indicates the target position for this branch line.
-    # (I.e., this array maps the current column positions to their
-    # desired positions.)
-    #
-    # The maximum capacity of this array is always
-    # sizeof(int) * 2 * column_capacity.
-    #         int *mapping
-    #
-    # A temporary array for computing the next mapping state
-    # while we are outputting a mapping line. This is stored as part
-    # of the git_graph simply so we don't have to allocate a new
-    # temporary array each time we have to output a collapsing line.
-    #         int *new_mapping
-    #
-    # The current default column color being used. This is
-    # stored as an index into the array column_colors.
-    #         unsigned short default_column_color
-
-    def _write_column(self, col, col_char):
-        if col.color is not None:
-            self.buf += self.column_colors[col.color]
-        self.buf += col_char
-        if col.color is not None:
-            self.buf += self.column_colors[-1]
-
+# The commit currently being processed
+#         struct commit *commit
+#
+# The number of interesting parents that this commit has.
+# Note that this is not the same as the actual number of parents.
+# This count excludes parents that won't be printed in the graph
+# output, as determined by is_interesting().
+#         int num_parents
+#
+# The width of the graph output for this commit.
+# All rows for this commit are padded to this width, so that
+# messages printed after the graph output are aligned.
+#         int width
+#
+# The next expansion row to print
+# when state is GraphState.PRE_COMMIT
+#         int expansion_row
+#
+# The current output state.
+# This tells us what kind of line next_line() should output.
+#         enum graph_state state
+#
+# The output state for the previous line of output.
+# This is primarily used to determine how the first merge line
+# should appear, based on the last line of the previous commit.
+#         enum graph_state prev_state
+#
+# The index of the column that refers to this commit.
+# If none of the incoming columns refer to this commit,
+# this will be equal to num_columns.
+#         int commit_index
+#
+# The commit_index for the previously displayed commit.
+# This is used to determine how the first line of a merge
+# graph output should appear, based on the last line of the
+# previous commit.
+#         int prev_commit_index
+#
+# The maximum number of columns that can be stored in the columns
+# and new_columns arrays. This is also half the number of entries
+# that can be stored in the mapping and new_mapping arrays.
+#         int column_capacity
+#
+# The number of columns (also called "branch lines" in some places)
+#         int num_columns
+#
+# The number of columns in the new_columns array
+#         int num_new_columns
+#
+# The number of entries in the mapping array
+#         int mapping_size
+#
+# The column state before we output the current commit.
+#         struct column *columns
+#
+# The new column state after we output the current commit.
+# Only valid when state is GraphState.COLLAPSING.
+#         struct column *new_columns
+#
+# An array that tracks the current state of each
+# character in the output line during state GraphState.COLLAPSING.
+# Each entry is -1 if this character is empty, or a non-negative
+# integer if the character contains a branch line. The value of
+# the integer indicates the target position for this branch line.
+# (I.e., this array maps the current column positions to their
+# desired positions.)
+#
+# The maximum capacity of this array is always
+# sizeof(int) * 2 * column_capacity.
+#         int *mapping
+#
+# A temporary array for computing the next mapping state
+# while we are outputting a mapping line. This is stored as part
+# of the git_graph simply so we don't have to allocate a new
+# temporary array each time we have to output a collapsing line.
+#         int *new_mapping
+#
+# The current default column color being used. This is
+# stored as an index into the array column_colors.
+#         unsigned short default_column_color
+class Graph(object):  # noqa: E501, D104 pylint: disable=too-many-instance-attributes, too-few-public-methods
     def __init__(self,
                  fh=None,
                  first_parent_only=False,
                  use_color=True,
                  column_colors=None):
+        """State machine for processing DAG nodes into ASCII graphs.
+
+        show_nodes() deals with sorting the nodes from tips down into
+        topological order. It then displays them line-by-line.
+
+        """
         self.commit = None
         self.buf = ''
 
@@ -160,6 +166,36 @@ class Graph(object):
         self.new_columns = {}
         self.mapping = {}
         self.new_mapping = {}
+
+    def show_nodes(self, tips):
+        """Show an ASCII DAG for the nodes provided.
+
+        Nodes are walked and returned without duplicates and then
+        sorted topologically (a requirement of the algorithm). The
+        original Git API is then used internally to display the graph
+        line-by-line, outputting the Node's content at the relevant
+        point.
+
+        Args:
+            tips (:obj:`list` of :obj:`Node`): tips of trees to display
+
+        """
+        nodes = sort_in_topological_order(list(once(walk_nodes(tips))))
+        for node in nodes:
+            self._update(node)
+            self._show_commit()
+            self.outfile.write(node.item)
+            if not self._is_commit_finished():
+                self.outfile.write('\n')
+                self._show_remainder()
+            self.outfile.write('\n')
+
+    def _write_column(self, col, col_char):
+        if col.color is not None:
+            self.buf += self.column_colors[col.color]
+        self.buf += col_char
+        if col.color is not None:
+            self.buf += self.column_colors[-1]
 
     def _update_state(self, state):
         self.prev_state = self.state
@@ -333,8 +369,7 @@ class Graph(object):
             self.state = GraphState.SKIP
         elif (self.num_parents >= 3 and
               self.commit_index < (self.num_columns - 1)):
-            # pylint: disable=redefined-variable-type
-            self.state = GraphState.PRE_COMMIT
+            self.state = GraphState.PRE_COMMIT  # noqa: E501 pylint: disable=redefined-variable-type
         else:
             self.state = GraphState.COMMIT
 
@@ -452,8 +487,7 @@ class Graph(object):
         self._write_column(self.new_columns[col_num], '.')
         return num_dashes + 1
 
-    # pylint: disable=too-many-branches
-    def _output_commit_line(self):  # noqa: C901
+    def _output_commit_line(self):  # noqa: C901, E501 pylint: disable=too-many-branches
         # Output the row containing this commit
         # Iterate up to and including self.num_columns,
         # since the current commit may not be in any of the existing
@@ -566,8 +600,7 @@ class Graph(object):
         else:
             self._update_state(GraphState.COLLAPSING)
 
-    # pylint: disable=too-many-branches
-    def _output_collapsing_line(self):  # noqa: C901
+    def _output_collapsing_line(self):  # noqa: C901, E501 pylint: disable=too-many-branches
         used_horizontal = False
         horizontal_edge = -1
         horizontal_edge_target = -1
@@ -674,8 +707,7 @@ class Graph(object):
         if self._is_mapping_correct():
             self._update_state(GraphState.PADDING)
 
-    # pylint: disable=too-many-return-statements
-    def _next_line(self):
+    def _next_line(self):  # pylint: disable=too-many-return-statements
         if self.state == GraphState.PADDING:
             self._output_padding_line()
             return False
@@ -700,6 +732,7 @@ class Graph(object):
     def _padding_line(self):
         """
         Output a padding line in the graph.
+
         This is similar to next_line(). However, it is guaranteed to
         never print the current commit line. Instead, if the commit line is
         next, it will simply output a line of vertical padding, extending the
@@ -770,14 +803,3 @@ class Graph(object):
                 break
 
         return shown
-
-    def show_nodes(self, tips):
-        nodes = sort_in_topological_order(list(once(walk_nodes(tips))))
-        for node in nodes:
-            self._update(node)
-            self._show_commit()
-            self.outfile.write(node.item)
-            if not self._is_commit_finished():
-                self.outfile.write('\n')
-                self._show_remainder()
-            self.outfile.write('\n')

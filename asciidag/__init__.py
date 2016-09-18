@@ -1,3 +1,6 @@
+# noqa: D400
+""".. include:: ../README.rst"""
+
 __title__ = "asciidag"
 __version__ = "0.1.0"
 __copyright__ = "Copyright 2016 Sam Brightman"
