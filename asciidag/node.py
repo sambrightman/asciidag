@@ -17,8 +17,8 @@ class Node(object):
         return str(self.item)
 
     @staticmethod
-    def from_dict(d):
-        return [Node(k, Node.from_dict(v)) for k, v in d.items()]
+    def from_dict(dct):
+        return [Node(k, Node.from_dict(v)) for k, v in dct.items()]
 
     @staticmethod
     def from_list(head, *tail):

@@ -9,6 +9,7 @@ from .color import COLUMN_COLORS_ANSI
 from .sequence import walk_nodes, once, sort_in_topological_order
 
 
+# pylint: disable=too-few-public-methods
 class Column(object):
     """A single column of output
 
@@ -22,6 +23,7 @@ class Column(object):
         self.color = color
 
 
+# pylint: disable=too-many-instance-attributes
 class GraphState(Enum):
     PADDING = 0
     SKIP = 1
@@ -113,12 +115,12 @@ class Graph(object):
     # stored as an index into the array column_colors.
     #         unsigned short default_column_color
 
-    def write_column(self, c, col_char):
-        if c.color is not None:
-            self.sb += self.column_colors[c.color]
-        self.sb += col_char
-        if c.color is not None:
-            self.sb += self.column_colors[-1]
+    def _write_column(self, col, col_char):
+        if col.color is not None:
+            self.buf += self.column_colors[col.color]
+        self.buf += col_char
+        if col.color is not None:
+            self.buf += self.column_colors[-1]
 
     def __init__(self,
                  fh=None,
@@ -126,12 +128,12 @@ class Graph(object):
                  use_color=True,
                  column_colors=None):
         self.commit = None
-        self.sb = ''
+        self.buf = ''
 
         if fh is None:
-            self.fh = sys.stdout
+            self.outfile = sys.stdout
         else:
-            self.fh = fh
+            self.outfile = fh
         self.first_parent_only = first_parent_only
         self.use_color = use_color
         if column_colors is None:
@@ -140,6 +142,7 @@ class Graph(object):
             self.column_colors = column_colors
 
         self.num_parents = 0
+        self.width = 0
         self.expansion_row = 0
         self.state = GraphState.PADDING
         self.prev_state = GraphState.PADDING
@@ -158,32 +161,32 @@ class Graph(object):
         self.mapping = {}
         self.new_mapping = {}
 
-    def update_state(self, s):
+    def _update_state(self, state):
         self.prev_state = self.state
-        self.state = s
+        self.state = state
 
-    def interesting_parents(self):
+    def _interesting_parents(self):
         for parent in self.commit.parents:
             yield parent
             if self.first_parent_only:
                 break
 
-    def get_current_column_color(self):
+    def _get_current_column_color(self):
         if not self.use_color:
             return None
         return self.default_column_color
 
-    def increment_column_color(self):
+    def _increment_column_color(self):
         self.default_column_color = ((self.default_column_color + 1)
                                      % len(self.column_colors))
 
-    def find_commit_color(self, commit):
+    def _find_commit_color(self, commit):
         for i in range(self.num_columns):
             if self.columns[i].commit == commit:
                 return self.columns[i].color
-        return self.get_current_column_color()
+        return self._get_current_column_color()
 
-    def insert_into_new_columns(self, commit, mapping_index):
+    def _insert_into_new_columns(self, commit, mapping_index):
         # If the commit is already in the new_columns list, we don't need to
         # add it. Just update the mapping correctly.
         for i in range(self.num_new_columns):
@@ -192,13 +195,13 @@ class Graph(object):
                 return mapping_index + 2
 
         # This commit isn't already in new_columns. Add it.
-        column = Column(commit, self.find_commit_color(commit))
+        column = Column(commit, self._find_commit_color(commit))
         self.new_columns[self.num_new_columns] = column
         self.mapping[mapping_index] = self.num_new_columns
         self.num_new_columns += 1
         return mapping_index + 2
 
-    def update_width(self, is_commit_in_existing_columns):
+    def _update_width(self, is_commit_in_existing_columns):
         # Compute the width needed to display the graph for this commit.
         # This is the maximum width needed for any row. All other rows
         # will be padded to this width.
@@ -222,7 +225,7 @@ class Graph(object):
         # Each column takes up 2 spaces
         self.width = max_cols * 2
 
-    def update_columns(self):
+    def _update_columns(self):
         # Swap self.columns with self.new_columns
         # self.columns contains the state for the previous commit,
         # and new_columns now contains the state for our commit.
@@ -269,13 +272,13 @@ class Graph(object):
                 old_mapping_idx = mapping_idx
                 seen_this = True
                 self.commit_index = i
-                for parent in self.interesting_parents():
+                for parent in self._interesting_parents():
                     # If this is a merge, or the start of a new
                     # childless column, increment the current
                     # color.
                     if self.num_parents > 1 or not is_commit_in_columns:
-                        self.increment_column_color()
-                    mapping_idx = self.insert_into_new_columns(
+                        self._increment_column_color()
+                    mapping_idx = self._insert_into_new_columns(
                         parent,
                         mapping_idx)
                 # We always need to increment mapping_idx by at
@@ -285,20 +288,20 @@ class Graph(object):
                 if mapping_idx == old_mapping_idx:
                     mapping_idx += 2
             else:
-                mapping_idx = self.insert_into_new_columns(col_commit,
-                                                           mapping_idx)
+                mapping_idx = self._insert_into_new_columns(col_commit,
+                                                            mapping_idx)
 
         # Shrink mapping_size to be the minimum necessary
-        while (self.mapping_size > 1
-               and self.mapping[self.mapping_size - 1] < 0):
+        while (self.mapping_size > 1 and
+               self.mapping[self.mapping_size - 1] < 0):
             self.mapping_size -= 1
 
         # Compute self.width for this commit
-        self.update_width(is_commit_in_columns)
+        self._update_width(is_commit_in_columns)
 
-    def update(self, commit):
+    def _update(self, commit):
         self.commit = commit
-        self.num_parents = len(list(self.interesting_parents()))
+        self.num_parents = len(list(self._interesting_parents()))
 
         # Store the old commit_index in prev_commit_index.
         # update_columns() will update self.commit_index for this
@@ -307,7 +310,7 @@ class Graph(object):
 
         # Call update_columns() to update
         # columns, new_columns, and mapping.
-        self.update_columns()
+        self._update_columns()
         self.expansion_row = 0
 
         # Update self.state.
@@ -328,13 +331,14 @@ class Graph(object):
         # commit line.
         if self.state != GraphState.PADDING:
             self.state = GraphState.SKIP
-        elif (self.num_parents >= 3
-              and self.commit_index < (self.num_columns - 1)):
+        elif (self.num_parents >= 3 and
+              self.commit_index < (self.num_columns - 1)):
+            # pylint: disable=redefined-variable-type
             self.state = GraphState.PRE_COMMIT
         else:
             self.state = GraphState.COMMIT
 
-    def is_mapping_correct(self):
+    def _is_mapping_correct(self):
         # The mapping is up to date if each entry is at its target,
         # or is 1 greater than its target.
         # (If it is 1 greater than the target, '/' will be printed, so it
@@ -342,13 +346,13 @@ class Graph(object):
         for i in range(self.mapping_size):
             target = self.mapping[i]
             if target < 0:
-                    continue
+                continue
             if target == i // 2:
-                    continue
+                continue
             return False
         return True
 
-    def pad_horizontally(self, chars_written):
+    def _pad_horizontally(self, chars_written):
         # Add additional spaces to the end of the string, so that all
         # lines for a particular commit have the same width.
         #
@@ -358,28 +362,28 @@ class Graph(object):
             return
 
         extra = self.width - chars_written
-        self.sb += ' ' * extra
+        self.buf += ' ' * extra
 
-    def output_padding_line(self):
+    def _output_padding_line(self):
         # Output a padding row, that leaves all branch lines unchanged
         for i in range(self.num_new_columns):
-            self.write_column(self.new_columns[i], '|')
-            self.sb += ' '
+            self._write_column(self.new_columns[i], '|')
+            self.buf += ' '
 
-        self.pad_horizontally(self.num_new_columns * 2)
+        self._pad_horizontally(self.num_new_columns * 2)
 
-    def output_skip_line(self):
+    def _output_skip_line(self):
         # Output an ellipsis to indicate that a portion
         # of the graph is missing.
-        self.sb += '...'
-        self.pad_horizontally(3)
+        self.buf += '...'
+        self._pad_horizontally(3)
 
         if self.num_parents >= 3 and self.commit_index < self.num_columns - 1:
-            self.update_state(GraphState.PRE_COMMIT)
+            self._update_state(GraphState.PRE_COMMIT)
         else:
-            self.update_state(GraphState.COMMIT)
+            self._update_state(GraphState.COMMIT)
 
-    def output_pre_commit_line(self):
+    def _output_pre_commit_line(self):
         # This function formats a row that increases the space around a commit
         # with multiple parents, to make room for it. It should only be
         # called when there are 3 or more parents.
@@ -390,8 +394,7 @@ class Graph(object):
 
         # self.expansion_row tracks the current expansion row we are on.
         # It should be in the range [0, num_expansion_rows - 1]
-        assert (0 <= self.expansion_row
-                and self.expansion_row < num_expansion_rows), \
+        assert (0 <= self.expansion_row < num_expansion_rows), \
             'wrong number of expansion rows'
 
         # Output the row
@@ -401,8 +404,8 @@ class Graph(object):
             col = self.columns[i]
             if col.commit == self.commit:
                 seen_this = True
-                self.write_column(col, '|')
-                self.sb += ' ' * self.expansion_row
+                self._write_column(col, '|')
+                self.buf += ' ' * self.expansion_row
                 chars_written += 1 + self.expansion_row
             elif seen_this and (self.expansion_row == 0):
                 # This is the first line of the pre-commit output.
@@ -412,31 +415,31 @@ class Graph(object):
                 # printed as "\" on the previous line. Continue
                 # to print them as "\" on this line. Otherwise,
                 # print the branch lines as "|".
-                if (self.prev_state == GraphState.POST_MERGE
-                        and self.prev_commit_index < i):
-                    self.write_column(col, '\\')
+                if (self.prev_state == GraphState.POST_MERGE and
+                        self.prev_commit_index < i):
+                    self._write_column(col, '\\')
                 else:
-                    self.write_column(col, '|')
+                    self._write_column(col, '|')
                 chars_written += 1
             elif seen_this and (self.expansion_row > 0):
-                self.write_column(col, '\\')
+                self._write_column(col, '\\')
                 chars_written += 1
             else:
-                self.write_column(col, '|')
+                self._write_column(col, '|')
                 chars_written += 1
-            self.sb += ' '
+            self.buf += ' '
             chars_written += 1
 
-        self.pad_horizontally(chars_written)
+        self._pad_horizontally(chars_written)
 
         # Increment self.expansion_row,
         # and move to state GraphState.COMMIT if necessary
         self.expansion_row += 1
         if self.expansion_row >= num_expansion_rows:
-            self.update_state(GraphState.COMMIT)
+            self._update_state(GraphState.COMMIT)
 
     # Draw an octopus merge and return the number of characters written.
-    def draw_octopus_merge(self):
+    def _draw_octopus_merge(self):
         # Here dashless_commits represents the number of parents
         # which don't need to have dashes (because their edges fit
         # neatly under the commit).
@@ -444,12 +447,13 @@ class Graph(object):
         num_dashes = ((self.num_parents - dashless_commits) * 2) - 1
         for i in range(num_dashes):
             col_num = i // 2 + dashless_commits + self.commit_index
-            self.write_column(self.new_columns[col_num], '-')
-        col_num = i // 2 + dashless_commits + self.commit_index
-        self.write_column(self.new_columns[col_num], '.')
+            self._write_column(self.new_columns[col_num], '-')
+        col_num = num_dashes // 2 + dashless_commits + self.commit_index
+        self._write_column(self.new_columns[col_num], '.')
         return num_dashes + 1
 
-    def output_commit_line(self):
+    # pylint: disable=too-many-branches
+    def _output_commit_line(self):  # noqa: C901
         # Output the row containing this commit
         # Iterate up to and including self.num_columns,
         # since the current commit may not be in any of the existing
@@ -468,15 +472,15 @@ class Graph(object):
 
             if col_commit == self.commit:
                 seen_this = True
-                self.sb += '*'
+                self.buf += '*'
                 chars_written += 1
 
                 if self.num_parents > 2:
-                    chars_written += self.draw_octopus_merge()
-            elif seen_this and (self.num_parents > 2):
-                self.write_column(col, '\\')
+                    chars_written += self._draw_octopus_merge()
+            elif seen_this and self.num_parents > 2:
+                self._write_column(col, '\\')
                 chars_written += 1
-            elif seen_this and (self.num_parents == 2):
+            elif seen_this and self.num_parents == 2:
                 # This is a 2-way merge commit.
                 # There is no GraphState.PRE_COMMIT stage for 2-way
                 # merges, so this is the first line of output
@@ -488,34 +492,34 @@ class Graph(object):
                 # and not '|' or '/'. If so, output the branch
                 # line as '\' on this line, instead of '|'. This
                 # makes the output look nicer.
-                if (self.prev_state == GraphState.POST_MERGE
-                        and self.prev_commit_index < i):
-                    self.write_column(col, '\\')
+                if (self.prev_state == GraphState.POST_MERGE and
+                        self.prev_commit_index < i):
+                    self._write_column(col, '\\')
                 else:
-                    self.write_column(col, '|')
+                    self._write_column(col, '|')
                 chars_written += 1
             else:
-                    self.write_column(col, '|')
-                    chars_written += 1
-            self.sb += ' '
+                self._write_column(col, '|')
+                chars_written += 1
+            self.buf += ' '
             chars_written += 1
 
-        self.pad_horizontally(chars_written)
+        self._pad_horizontally(chars_written)
 
         if self.num_parents > 1:
-            self.update_state(GraphState.POST_MERGE)
-        elif self.is_mapping_correct():
-            self.update_state(GraphState.PADDING)
+            self._update_state(GraphState.POST_MERGE)
+        elif self._is_mapping_correct():
+            self._update_state(GraphState.PADDING)
         else:
-            self.update_state(GraphState.COLLAPSING)
+            self._update_state(GraphState.COLLAPSING)
 
-    def find_new_column_by_commit(self, commit):
+    def _find_new_column_by_commit(self, commit):
         for i in range(self.num_new_columns):
             if self.new_columns[i].commit == commit:
                 return self.new_columns[i]
         return None
 
-    def output_post_merge_line(self):
+    def _output_post_merge_line(self):
         seen_this = False
         chars_written = 0
         for i in range(self.num_columns + 1):
@@ -533,36 +537,37 @@ class Graph(object):
                 # new_columns and use those to format the
                 # edges.
                 seen_this = True
-                parents = self.interesting_parents()
+                parents = self._interesting_parents()
                 assert parents, 'merge has no parents'
-                par_column = self.find_new_column_by_commit(next(parents))
+                par_column = self._find_new_column_by_commit(next(parents))
                 assert par_column, 'parent column not found'
-                self.write_column(par_column, '|')
+                self._write_column(par_column, '|')
                 chars_written += 1
                 for parent in parents:
                     assert parent, 'parent is not valid'
-                    par_column = self.find_new_column_by_commit(parent)
+                    par_column = self._find_new_column_by_commit(parent)
                     assert par_column, 'parent column not found'
-                    self.write_column(par_column, '\\')
-                    self.sb += ' '
+                    self._write_column(par_column, '\\')
+                    self.buf += ' '
                 chars_written += (self.num_parents - 1) * 2
             elif seen_this:
-                self.write_column(col, '\\')
-                self.sb += ' '
+                self._write_column(col, '\\')
+                self.buf += ' '
                 chars_written += 2
             else:
-                self.write_column(col, '|')
-                self.sb += ' '
+                self._write_column(col, '|')
+                self.buf += ' '
                 chars_written += 2
 
-        self.pad_horizontally(chars_written)
+        self._pad_horizontally(chars_written)
 
-        if self.is_mapping_correct():
-            self.update_state(GraphState.PADDING)
+        if self._is_mapping_correct():
+            self._update_state(GraphState.PADDING)
         else:
-            self.update_state(GraphState.COLLAPSING)
+            self._update_state(GraphState.COLLAPSING)
 
-    def output_collapsing_line(self):
+    # pylint: disable=too-many-branches
+    def _output_collapsing_line(self):  # noqa: C901
         used_horizontal = False
         horizontal_edge = -1
         horizontal_edge_target = -1
@@ -589,7 +594,7 @@ class Graph(object):
 
             if target * 2 == i:
                 # This column is already in the correct place
-                assert(self.new_mapping[i] == -1)
+                assert self.new_mapping[i] == -1
                 self.new_mapping[i] = target
             elif self.new_mapping[i - 1] < 0:
                 # Nothing is to the left. Move to the left by one.
@@ -626,9 +631,9 @@ class Graph(object):
                 #
                 # The branch to the left of that space
                 # should be our eventual target.
-                assert(self.new_mapping[i - 1] > target)
-                assert(self.new_mapping[i - 2] < 0)
-                assert(self.new_mapping[i - 3] == target)
+                assert self.new_mapping[i - 1] > target
+                assert self.new_mapping[i - 2] < 0
+                assert self.new_mapping[i - 3] == target
                 self.new_mapping[i - 2] = target
                 # Mark this branch as the horizontal edge to
                 # prevent any other edges from moving
@@ -644,9 +649,9 @@ class Graph(object):
         for i in range(self.mapping_size):
             target = self.new_mapping[i]
             if target < 0:
-                self.sb += ' '
+                self.buf += ' '
             elif target * 2 == i:
-                self.write_column(self.new_columns[target], '|')
+                self._write_column(self.new_columns[target], '|')
             elif target == horizontal_edge_target and i != horizontal_edge - 1:
                 # Set the mappings for all but the
                 # first segment to -1 so that they
@@ -654,44 +659,45 @@ class Graph(object):
                 if i != (target * 2) + 3:
                     self.new_mapping[i] = -1
                 used_horizontal = True
-                self.write_column(self.new_columns[target], '_')
+                self._write_column(self.new_columns[target], '_')
             else:
                 if used_horizontal and i < horizontal_edge:
                     self.new_mapping[i] = -1
-                self.write_column(self.new_columns[target], '/')
+                self._write_column(self.new_columns[target], '/')
 
-        self.pad_horizontally(self.mapping_size)
+        self._pad_horizontally(self.mapping_size)
         self.mapping, self.new_mapping = self.new_mapping, self.mapping
 
         # If self.mapping indicates that all of the branch lines
         # are already in the correct positions, we are done.
         # Otherwise, we need to collapse some branch lines together.
-        if self.is_mapping_correct():
-            self.update_state(GraphState.PADDING)
+        if self._is_mapping_correct():
+            self._update_state(GraphState.PADDING)
 
-    def next_line(self):
+    # pylint: disable=too-many-return-statements
+    def _next_line(self):
         if self.state == GraphState.PADDING:
-            self.output_padding_line()
+            self._output_padding_line()
             return False
         elif self.state == GraphState.SKIP:
-            self.output_skip_line()
+            self._output_skip_line()
             return False
         elif self.state == GraphState.PRE_COMMIT:
-            self.output_pre_commit_line()
+            self._output_pre_commit_line()
             return False
         elif self.state == GraphState.COMMIT:
-            self.output_commit_line()
+            self._output_commit_line()
             return True
         elif self.state == GraphState.POST_MERGE:
-            self.output_post_merge_line()
+            self._output_post_merge_line()
             return False
         elif self.state == GraphState.COLLAPSING:
-            self.output_collapsing_line()
+            self._output_collapsing_line()
             return False
         else:
             return False
 
-    def padding_line(self):
+    def _padding_line(self):
         """
         Output a padding line in the graph.
         This is similar to next_line(). However, it is guaranteed to
@@ -700,7 +706,7 @@ class Graph(object):
         branch lines downwards, but leaving them otherwise unchanged.
         """
         if self.state != GraphState.COMMIT:
-            self.next_line()
+            self._next_line()
             return
 
         # Output the row containing this commit
@@ -710,56 +716,56 @@ class Graph(object):
         # children that we have already processed.)
         for i in range(self.num_columns):
             col = self.columns[i]
-            self.write_column(col, '|')
+            self._write_column(col, '|')
             if col.commit == self.commit and self.num_parents > 2:
-                self.sb += ' ' * (self.num_parents - 2) * 2
+                self.buf += ' ' * (self.num_parents - 2) * 2
             else:
-                self.sb += ' '
+                self.buf += ' '
 
-        self.pad_horizontally(self.num_columns)
+        self._pad_horizontally(self.num_columns)
 
         # Update self.prev_state since we have output a padding line
         self.prev_state = GraphState.PADDING
 
-    def is_commit_finished(self):
+    def _is_commit_finished(self):
         return self.state == GraphState.PADDING
 
-    def show_commit(self):
+    def _show_commit(self):
         shown_commit_line = False
 
         # When showing a diff of a merge against each of its parents, we
         # are called once for each parent without update having been
         # called. In this case, simply output a single padding line.
-        if self.is_commit_finished():
-            self.show_padding()
+        if self._is_commit_finished():
+            self._show_padding()
             shown_commit_line = True
 
-        while not shown_commit_line and not self.is_commit_finished():
-            shown_commit_line = self.next_line()
-            self.fh.write(self.sb)
+        while not shown_commit_line and not self._is_commit_finished():
+            shown_commit_line = self._next_line()
+            self.outfile.write(self.buf)
             if not shown_commit_line:
-                self.fh.write('\n')
-            self.sb = ''
+                self.outfile.write('\n')
+            self.buf = ''
 
-    def show_padding(self):
-        self.padding_line()
-        self.fh.write(self.sb)
-        self.sb = ''
+    def _show_padding(self):
+        self._padding_line()
+        self.outfile.write(self.buf)
+        self.buf = ''
 
-    def show_remainder(self):
+    def _show_remainder(self):
         shown = False
 
-        if self.is_commit_finished():
+        if self._is_commit_finished():
             return False
 
         while True:
-            self.next_line()
-            self.fh.write(self.sb)
-            self.sb = ''
+            self._next_line()
+            self.outfile.write(self.buf)
+            self.buf = ''
             shown = True
 
-            if not self.is_commit_finished():
-                self.fh.write('\n')
+            if not self._is_commit_finished():
+                self.outfile.write('\n')
             else:
                 break
 
@@ -768,10 +774,10 @@ class Graph(object):
     def show_nodes(self, tips):
         nodes = sort_in_topological_order(list(once(walk_nodes(tips))))
         for node in nodes:
-            self.update(node)
-            self.show_commit()
-            self.fh.write(node.item)
-            if not self.is_commit_finished():
-                self.fh.write('\n')
-                self.show_remainder()
-            self.fh.write('\n')
+            self._update(node)
+            self._show_commit()
+            self.outfile.write(node.item)
+            if not self._is_commit_finished():
+                self.outfile.write('\n')
+                self._show_remainder()
+            self.outfile.write('\n')

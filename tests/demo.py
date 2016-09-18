@@ -8,7 +8,7 @@ from asciidag.graph import Graph
 from asciidag.node import Node
 
 
-if __name__ == '__main__':
+def main():
     graph = Graph()
 
     root = Node('root')
@@ -34,3 +34,7 @@ if __name__ == '__main__':
     ]
 
     graph.show_nodes(tips)
+
+
+if __name__ == '__main__':
+    main()
