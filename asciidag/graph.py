@@ -6,6 +6,7 @@ from enum import Enum
 import sys
 
 from .color import COLUMN_COLORS_ANSI
+from .sequence import walk_nodes, once, sort_in_topological_order
 
 
 class Column(object):
@@ -120,14 +121,17 @@ class Graph(object):
             self.sb += self.column_colors[-1]
 
     def __init__(self,
-                 fh=sys.stdout,
+                 fh=None,
                  first_parent_only=False,
                  use_color=True,
                  column_colors=None):
         self.commit = None
         self.sb = ''
 
-        self.fh = fh
+        if fh is None:
+            self.fh = sys.stdout
+        else:
+            self.fh = fh
         self.first_parent_only = first_parent_only
         self.use_color = use_color
         if column_colors is None:
@@ -159,9 +163,7 @@ class Graph(object):
         self.state = s
 
     def interesting_parents(self):
-        parents = self.commit.parents
-
-        for parent in parents:
+        for parent in self.commit.parents:
             yield parent
             if self.first_parent_only:
                 break
@@ -763,7 +765,8 @@ class Graph(object):
 
         return shown
 
-    def show_nodes(self, nodes):
+    def show_nodes(self, tips):
+        nodes = sort_in_topological_order(list(once(walk_nodes(tips))))
         for node in nodes:
             self.update(node)
             self.show_commit()

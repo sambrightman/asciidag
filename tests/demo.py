@@ -6,7 +6,6 @@ from __future__ import division, print_function
 
 from asciidag.graph import Graph
 from asciidag.node import Node
-from asciidag.sequence import walk_nodes_once
 
 
 if __name__ == '__main__':
@@ -34,4 +33,4 @@ if __name__ == '__main__':
         Node('foo', [Node('bar')]),
     ]
 
-    graph.show_nodes(walk_nodes_once(tips))
+    graph.show_nodes(tips)
