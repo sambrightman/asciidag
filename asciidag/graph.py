@@ -8,8 +8,8 @@ This is almost a straight port of Git's graph.c.
 from __future__ import absolute_import, unicode_literals
 from __future__ import division, print_function
 
-from enum import Enum
 import sys
+from enum import Enum
 
 from .color import COLUMN_COLORS_ANSI
 from .sequence import walk_nodes, once, sort_in_topological_order
@@ -32,7 +32,7 @@ class Column(object):  # pylint: disable=too-few-public-methods
         self.color = color
 
 
-class GraphState(Enum):
+class GraphState(Enum):  # pylint: disable=too-few-public-methods
     PADDING = 0
     SKIP = 1
     PRE_COMMIT = 2
