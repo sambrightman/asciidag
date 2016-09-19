@@ -25,7 +25,7 @@ Overview
 This is a direct port of the `Git`_ log graphing code, which draws
 directed acyclic commit graphs as ASCII art. It was done very
 mechnically and quickly, so the code is not Pythonic. Dependencies on
-`Git`_ specifics should be gone but and look and feel remains.
+`Git`_ specifics should be gone but look and feel remains.
 
 This project is alpha quality and subject to breaking API changes.
 
