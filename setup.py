@@ -39,8 +39,8 @@ def main():  # noqa: D103
         tests_require=[
             "flake8",
             "flake8_docstrings",
-            "pylint",
             "pylint-venv",
+            "pylint",
             "pytest-cov",
             "pytest-flake8",
             "pytest-pylint",
