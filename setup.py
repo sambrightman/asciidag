@@ -44,7 +44,7 @@ def main():  # noqa: D103
             "pytest-cov",
             "pytest-flake8",
             "pytest-pylint",
-            "pytest",
+            "pytest>=2.7",
         ],
         license=metadata["license"],
         classifiers=[
