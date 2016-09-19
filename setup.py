@@ -37,8 +37,8 @@ def main():  # noqa: D103
             'enum34',
         ],
         tests_require=[
-            "flake8",
             "flake8_docstrings",
+            "flake8",
             "pylint-venv",
             "pylint",
             "pytest-cov",
