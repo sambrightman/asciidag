@@ -1,7 +1,7 @@
 asciidag - draw DAGs as ASCII art
 =================================
 
-|build-status| |coverage|
+|build-status| |coverage| |requires|
 
 .. |build-status| image:: https://travis-ci.org/sambrightman/asciidag.svg?branch=master
     :target: https://travis-ci.org/sambrightman/asciidag
@@ -10,6 +10,10 @@ asciidag - draw DAGs as ASCII art
 .. |coverage| image:: https://coveralls.io/repos/github/sambrightman/asciidag/badge.svg?branch=master
     :target: https://coveralls.io/github/sambrightman/asciidag?branch=master
     :alt: Coverage
+
+.. |requires| image:: https://requires.io/github/sambrightman/asciidag/requirements.svg?branch=master
+     :target: https://requires.io/github/sambrightman/asciidag/requirements/?branch=master
+     :alt: Requirements Status
 
 Overview
 --------
