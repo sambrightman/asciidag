@@ -9,8 +9,8 @@ python:
   - "pypy"
   - "pypy3"
 before_install:
+  - pip install -U pip setuptools virtualenvwrapper
   - wipeenv
-  - pip install -U pip setuptools
 install:
   - pip install .
 script: python setup.py test
