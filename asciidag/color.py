@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""ANSI codes used for coloured console output."""
+
 COLOR_NORMAL = ""
 COLOR_RESET = "\033[m"
 COLOR_BOLD = "\033[1m"
