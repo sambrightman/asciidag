@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Demonstration of package functionality."""
 
 from __future__ import absolute_import, unicode_literals
 from __future__ import division, print_function
@@ -9,6 +10,7 @@ from asciidag.node import Node
 
 
 def main():
+    """Run a simple demo of the package's functionality."""
     graph = Graph()
 
     root = Node('root')

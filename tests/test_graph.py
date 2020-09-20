@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Tests the graph module."""
 
 from __future__ import absolute_import, unicode_literals
 from __future__ import division, print_function
@@ -13,11 +14,13 @@ from asciidag.node import Node
 # FIXME: fails to capture stdout
 @pytest.fixture
 def graph():
+    """Fixture to supply an empty graph."""
     return Graph(use_color=False)
 
 
 @pytest.fixture
 def simple_nodes():
+    """Fixture to supply a simple, linear set of nodes."""
     return [Node.from_list(
         "Second",
         "sixth",
@@ -31,6 +34,7 @@ def simple_nodes():
 
 @pytest.fixture
 def branched_nodes():
+    """Fixture to supply a simple set of nodes with one feature branch."""
     third = Node.from_list("third", "second", "initial")
     tip = Node("Merge branch 'side'", parents=[
         Node("Second", parents=[
@@ -49,6 +53,7 @@ def branched_nodes():
 
 @pytest.fixture
 def tangled_nodes():
+    """Fixture to supply a complicated set of nodes with multiple branches."""
     second = Node.from_list("second", "initial")
     third = Node("third", parents=[second])
     fifth = Node("fifth", parents=[
@@ -82,12 +87,14 @@ def tangled_nodes():
 
 
 def verify_out(capfd, expected):
+    """Verify captured standard output/error matches the expected string, whilst also displaying it."""
     out, _ = capfd.readouterr()
     print(out)
     assert expected == out
 
 
 def test_linear(simple_nodes, capfd):
+    """Test the simple set of nodes."""
     graph = Graph(use_color=False)
     graph.show_nodes(simple_nodes)
     verify_out(capfd, r"""* Second
@@ -102,6 +109,7 @@ def test_linear(simple_nodes, capfd):
 
 @pytest.mark.xfail
 def test_branched(branched_nodes, capfd):
+    """Test the branched set of nodes."""
     graph = Graph(use_color=False)
     graph.show_nodes(branched_nodes)
     verify_out(capfd, r"""*   Merge branch 'side'
@@ -120,6 +128,7 @@ def test_branched(branched_nodes, capfd):
 
 @pytest.mark.xfail
 def test_tangled(tangled_nodes, capfd):
+    """Test the complex set of nodes."""
     graph = Graph(use_color=False)
     graph.show_nodes(tangled_nodes)
     verify_out(capfd, r"""*   Merge tag 'reach'
