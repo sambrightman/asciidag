@@ -1,2 +1,6 @@
 commit -> node
 tests
+remove pylint/noqa exceptions
+add more flake8/pylint plugins
+sequence.once() uniqueness
+does demo belong in tests?
