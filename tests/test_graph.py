@@ -10,7 +10,7 @@ from asciidag.graph import Graph
 from asciidag.node import Node
 
 
-# fails to capture stdout
+# FIXME: fails to capture stdout
 @pytest.fixture
 def graph():
     return Graph(use_color=False)
