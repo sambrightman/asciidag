@@ -16,7 +16,7 @@ from .sequence import walk_nodes, once, sort_in_topological_order
 __all__ = ('Graph',)
 
 
-class Column(object):  # pylint: disable=too-few-public-methods
+class Column(object):  # pylint: disable=too-few-public-methods,useless-object-inheritance
     """A single column of output.
 
     Attributes:
@@ -122,7 +122,7 @@ class GraphState(Enum):  # pylint: disable=too-few-public-methods
 # The current default column color being used. This is
 # stored as an index into the array column_colors.
 #         unsigned short default_column_color
-class Graph(object):  # noqa: E501, D104 pylint: disable=too-many-instance-attributes, too-few-public-methods
+class Graph(object):  # pylint: disable=too-many-instance-attributes,too-few-public-methods,useless-object-inheritance
     """A state machine for processing DAG nodes into ASCII graphs."""
 
     def __init__(self,
@@ -333,8 +333,8 @@ class Graph(object):  # noqa: E501, D104 pylint: disable=too-many-instance-attri
                                                             mapping_idx)
 
         # Shrink mapping_size to be the minimum necessary
-        while (self.mapping_size > 1 and
-               self.mapping[self.mapping_size - 1] < 0):
+        while (self.mapping_size > 1
+               and self.mapping[self.mapping_size - 1] < 0):
             self.mapping_size -= 1
 
         # Compute self.width for this commit
@@ -372,9 +372,9 @@ class Graph(object):  # noqa: E501, D104 pylint: disable=too-many-instance-attri
         # commit line.
         if self.state != GraphState.PADDING:
             self.state = GraphState.SKIP
-        elif (self.num_parents >= 3 and
-              self.commit_index < (self.num_columns - 1)):
-            self.state = GraphState.PRE_COMMIT  # noqa: E501 pylint: disable=redefined-variable-type
+        elif (self.num_parents >= 3
+              and self.commit_index < (self.num_columns - 1)):
+            self.state = GraphState.PRE_COMMIT
         else:
             self.state = GraphState.COMMIT
 
@@ -455,8 +455,8 @@ class Graph(object):  # noqa: E501, D104 pylint: disable=too-many-instance-attri
                 # printed as "\" on the previous line. Continue
                 # to print them as "\" on this line. Otherwise,
                 # print the branch lines as "|".
-                if (self.prev_state == GraphState.POST_MERGE and
-                        self.prev_commit_index < i):
+                if (self.prev_state == GraphState.POST_MERGE
+                        and self.prev_commit_index < i):
                     self._write_column(col, '\\')
                 else:
                     self._write_column(col, '|')
@@ -531,8 +531,8 @@ class Graph(object):  # noqa: E501, D104 pylint: disable=too-many-instance-attri
                 # and not '|' or '/'. If so, output the branch
                 # line as '\' on this line, instead of '|'. This
                 # makes the output look nicer.
-                if (self.prev_state == GraphState.POST_MERGE and
-                        self.prev_commit_index < i):
+                if (self.prev_state == GraphState.POST_MERGE
+                        and self.prev_commit_index < i):
                     self._write_column(col, '\\')
                 else:
                     self._write_column(col, '|')
