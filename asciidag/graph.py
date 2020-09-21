@@ -2,7 +2,6 @@
 """ASCII representation of directed acyclic graphs (DAGs).
 
 This is almost a straight port of Git's graph.c.
-
 """
 
 from __future__ import absolute_import, unicode_literals
@@ -33,6 +32,8 @@ class Column(object):  # pylint: disable=too-few-public-methods
 
 
 class GraphState(Enum):  # pylint: disable=too-few-public-methods
+    """The current state of the state machine."""
+
     PADDING = 0
     SKIP = 1
     PRE_COMMIT = 2
@@ -122,16 +123,20 @@ class GraphState(Enum):  # pylint: disable=too-few-public-methods
 # stored as an index into the array column_colors.
 #         unsigned short default_column_color
 class Graph(object):  # noqa: E501, D104 pylint: disable=too-many-instance-attributes, too-few-public-methods
+    """A state machine for processing DAG nodes into ASCII graphs."""
+
     def __init__(self,
                  fh=None,
                  first_parent_only=False,
                  use_color=True,
                  column_colors=None):
-        """State machine for processing DAG nodes into ASCII graphs.
+        """Create a state machine for parsing and displaying graph nodes.
 
-        show_nodes() deals with sorting the nodes from tips down into
-        topological order. It then displays them line-by-line.
-
+        Args:
+            fh (:obj:`file`): file handle to write the ASCII representation to.
+            first_parent_only (:obj:`bool): display graph as if each node only had its first parent.
+            use_color (:obj:`bool`): whether to use colored output.
+            column_colors (:obj:`list` of :obj:`str`): list of ANSI control sequences to use for each lineage "column".
         """
         self.commit = None
         self.buf = ''
