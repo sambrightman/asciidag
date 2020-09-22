@@ -16,7 +16,7 @@ from .sequence import walk_nodes, once, sort_in_topological_order
 __all__ = ('Graph',)
 
 
-class Column(object):  # pylint: disable=too-few-public-methods,useless-object-inheritance
+class Column(object):  # pylint: disable=useless-object-inheritance
     """A single column of output.
 
     Attributes:
@@ -31,7 +31,7 @@ class Column(object):  # pylint: disable=too-few-public-methods,useless-object-i
         self.color = color
 
 
-class GraphState(Enum):  # pylint: disable=too-few-public-methods
+class GraphState(Enum):
     """The current state of the state machine."""
 
     PADDING = 0
@@ -122,7 +122,7 @@ class GraphState(Enum):  # pylint: disable=too-few-public-methods
 # The current default column color being used. This is
 # stored as an index into the array column_colors.
 #         unsigned short default_column_color
-class Graph(object):  # pylint: disable=too-many-instance-attributes,too-few-public-methods,useless-object-inheritance
+class Graph(object):  # pylint: disable=too-many-instance-attributes,useless-object-inheritance
     """A state machine for processing DAG nodes into ASCII graphs."""
 
     def __init__(self,
