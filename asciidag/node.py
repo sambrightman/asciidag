@@ -9,7 +9,7 @@ class InvalidNodeException(Exception):
     """Indicates an invalid attempt to create a node."""
 
 
-class Node(object):  # pylint: disable=useless-object-inheritance
+class Node(object):  # pylint: disable=bad-option-value,useless-object-inheritance
     """A node in a DAG with zero or more parents."""
 
     def __init__(self, item, parents=None):
@@ -25,7 +25,7 @@ class Node(object):  # pylint: disable=useless-object-inheritance
         try:
             iter(parents)
         except TypeError:
-            raise InvalidNodeException(str(item))  # pylint: disable=raise-missing-from
+            raise InvalidNodeException(str(item))  # pylint: disable=bad-option-value,raise-missing-from
         self.parents = parents
 
     def __str__(self):

@@ -16,7 +16,7 @@ from .sequence import walk_nodes, once, sort_in_topological_order
 __all__ = ('Graph',)
 
 
-class Column(object):  # pylint: disable=useless-object-inheritance
+class Column(object):  # pylint: disable=bad-option-value,useless-object-inheritance
     """A single column of output.
 
     Attributes:
@@ -122,7 +122,7 @@ class GraphState(Enum):
 # The current default column color being used. This is
 # stored as an index into the array column_colors.
 #         unsigned short default_column_color
-class Graph(object):  # pylint: disable=too-many-instance-attributes,useless-object-inheritance
+class Graph(object):  # pylint: disable=too-many-instance-attributes,bad-option-value,useless-object-inheritance
     """A state machine for processing DAG nodes into ASCII graphs."""
 
     def __init__(self,

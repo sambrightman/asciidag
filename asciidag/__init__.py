@@ -1,5 +1,4 @@
-# noqa: D400
-""".. include:: ../README.rst"""
+""".. include:: ../README.rst"""  # noqa: D400
 
 __title__ = "asciidag"
 __version__ = "0.1.0"

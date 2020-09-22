@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=missing-module-docstring,missing-function-docstring
+# pylint: disable=bad-option-value,missing-docstring,missing-module-docstring,missing-function-docstring
 
 from __future__ import absolute_import, unicode_literals
 from __future__ import division, print_function
