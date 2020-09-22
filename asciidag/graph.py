@@ -31,7 +31,7 @@ class Column(object):  # pylint: disable=bad-option-value,useless-object-inherit
         self.color = color
 
 
-class GraphState(Enum):
+class GraphState(Enum):  # pylint: disable=too-few-public-methods
     """The current state of the state machine."""
 
     PADDING = 0
@@ -492,7 +492,7 @@ class Graph(object):  # pylint: disable=too-many-instance-attributes,bad-option-
         self._write_column(self.new_columns[col_num], '.')
         return num_dashes + 1
 
-    def _output_commit_line(self):  # noqa: C901, E501 pylint: disable=too-many-branches
+    def _output_commit_line(self):  # noqa: C901 pylint: disable=too-many-branches
         # Output the row containing this commit
         # Iterate up to and including self.num_columns,
         # since the current commit may not be in any of the existing
@@ -605,7 +605,7 @@ class Graph(object):  # pylint: disable=too-many-instance-attributes,bad-option-
         else:
             self._update_state(GraphState.COLLAPSING)
 
-    def _output_collapsing_line(self):  # noqa: C901, E501 pylint: disable=too-many-branches
+    def _output_collapsing_line(self):  # noqa: C901 pylint: disable=too-many-branches
         used_horizontal = False
         horizontal_edge = -1
         horizontal_edge_target = -1
@@ -712,27 +712,21 @@ class Graph(object):  # pylint: disable=too-many-instance-attributes,bad-option-
         if self._is_mapping_correct():
             self._update_state(GraphState.PADDING)
 
-    def _next_line(self):  # pylint: disable=too-many-return-statements
+    def _next_line(self):
+        prev_state = self.state
         if self.state == GraphState.PADDING:
             self._output_padding_line()
-            return False
         elif self.state == GraphState.SKIP:
             self._output_skip_line()
-            return False
         elif self.state == GraphState.PRE_COMMIT:
             self._output_pre_commit_line()
-            return False
         elif self.state == GraphState.COMMIT:
             self._output_commit_line()
-            return True
         elif self.state == GraphState.POST_MERGE:
             self._output_post_merge_line()
-            return False
         elif self.state == GraphState.COLLAPSING:
             self._output_collapsing_line()
-            return False
-        else:
-            return False
+        return prev_state == GraphState.COMMIT
 
     def _padding_line(self):
         """
