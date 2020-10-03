@@ -1,6 +1,10 @@
-__pycache__
-.eggs
+*.egg
 *.egg-info
+*.py[cod]
+.DS_Store
 .cache
 .coverage
-*.pyc
+.eggs
+__pycache__
+build
+dist
