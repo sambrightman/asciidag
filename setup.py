@@ -28,12 +28,12 @@ def main():
         author=metadata["author"],
         author_email=metadata["email"],
         url=metadata["url"],
-        packages=find_packages(where='src'),
-        package_dir={'': 'src'},
+        packages=find_packages(where="src"),
+        package_dir={"": "src"},
         include_package_data=True,
         zip_safe=False,
         setup_requires=[
-            'pytest-runner',
+            "pytest-runner",
         ],
         install_requires=[
             "enum34; python_version<'3.4'",
