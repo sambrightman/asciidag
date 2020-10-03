@@ -1,0 +1,18 @@
+graft images
+graft src
+graft tests
+
+include .bumpversion.cfg
+include .coveragerc
+
+include CHANGELOG.rst
+include LICENSE
+include README.rst
+include pyproject.toml
+
+include appveyor.yml
+include .github
+include .travis.yml
+include tox.ini
+
+global-exclude *.py[cod] __pycache__/* *.so *.dylib
