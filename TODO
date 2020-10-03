@@ -12,4 +12,3 @@ add setup_requires setuptools version that supports environment specifiers? whee
 port new git changes/look for forks
 changelog
 automate releases
-fixup readme for release

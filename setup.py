@@ -25,6 +25,7 @@ def main():
         version=metadata["version"],
         description="Draw DAGs (directed acyclic graphs) as ASCII art, à la git log --graph",
         long_description=readme,
+        long_description_content_type="text/x-rst",
         author=metadata["author"],
         author_email=metadata["email"],
         url=metadata["url"],

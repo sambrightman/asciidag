@@ -24,28 +24,40 @@ Overview
 
 This is a direct port of the `Git`_ log graphing code, which draws
 directed acyclic commit graphs as ASCII art. It was done very
-mechnically and quickly, so the code is not Pythonic. Dependencies on
+mechanically and quickly, so the code is not Pythonic. Dependencies on
 `Git`_ specifics should be gone but look and feel remains.
 
 This project is alpha quality and subject to breaking API changes.
 
-If you are thinking about doing a large refactoring, please submit an
-issue for discussion first; I consider it potentially worth staying
-close to the `Git`_ source.
+    .. note::
+       💡
+       If you are thinking about doing a large refactoring, please submit
+       an issue for discussion first; I consider it potentially worthwhile
+       to stay close to the `Git`_ source.
 
+Installation
+------------
+
+Available for install/upgrade from `PyPI`_:
+
+.. code-block:: bash
+
+    pip install -U asciidag
+
+As usual, it is best to install your packages into a `virtual environment`_.
 
 Usage
 -----
 
-.. code-block:: bash
+``examples/demo.py`` is included in the installation directory and is
+executable. The core functionality is:
 
-    git clone https://github.com/sambrightman/asciidag.git
-    cd asciidag && pip install .
-    tests/demo.py
+.. include:: examples/demo.py
+   :code: python
+   :start-after: # start-after
+   :end-before: # end-before
 
-You likely need to use ``sudo`` for the install unless you work in a
-`Python virtual environment`_ or use the ``--user`` option to
-``pip``. Will soon be on `PyPI`_.
+Output:
 
 .. image:: images/demo.png?raw=true
    :alt: Demonstration screenshot
@@ -53,6 +65,6 @@ You likely need to use ``sudo`` for the install unless you work in a
 :copyright: © 2016 Sam Brightman
 :license: GNU General Public License v2.0, see LICENSE for more details.
 
-.. _Python virtual environment: http://docs.python-guide.org/en/latest/dev/virtualenvs
+.. _virtual environment: http://docs.python-guide.org/en/latest/dev/virtualenvs
 .. _Git: https://git-scm.com
 .. _PyPI: https://pypi.python.org
