@@ -5,6 +5,7 @@ graft tests
 include .bumpversion.cfg
 include .coveragerc
 
+include AUTHORS.rst
 include CHANGELOG.rst
 include LICENSE
 include README.rst
