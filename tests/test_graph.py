@@ -6,21 +6,17 @@ from __future__ import division, print_function
 
 import pytest
 
-from asciidag.graph import Graph
+
+def verify_output(capture, expected):
+    """Verify captured standard output matches the expected string."""
+    captured = capture.readouterr()
+    assert captured.out == expected
 
 
-def verify_out(capfd, expected):
-    """Verify captured standard output/error matches the expected string, whilst also displaying it."""
-    out, _ = capfd.readouterr()
-    print(out)
-    assert expected == out
-
-
-def test_linear(simple_nodes, capfd):
+def test_linear(graph, simple_nodes, capfd):
     """Test the simple set of nodes."""
-    graph = Graph(use_color=False)
     graph.show_nodes(simple_nodes)
-    verify_out(capfd, r"""* Second
+    verify_output(capfd, r"""* Second
 * sixth
 * fifth
 * fourth
@@ -31,11 +27,10 @@ def test_linear(simple_nodes, capfd):
 
 
 @pytest.mark.xfail
-def test_branched(branched_nodes, capfd):
+def test_branched(graph, branched_nodes, capfd):
     """Test the branched set of nodes."""
-    graph = Graph(use_color=False)
     graph.show_nodes(branched_nodes)
-    verify_out(capfd, r"""*   Merge branch 'side'
+    verify_output(capfd, r"""*   Merge branch 'side'
 |\
 | * side-2
 | * side-1
@@ -50,11 +45,10 @@ def test_branched(branched_nodes, capfd):
 
 
 @pytest.mark.xfail
-def test_tangled(tangled_nodes, capfd):
+def test_tangled(graph, tangled_nodes, capfd):
     """Test the complex set of nodes."""
-    graph = Graph(use_color=False)
     graph.show_nodes(tangled_nodes)
-    verify_out(capfd, r"""*   Merge tag 'reach'
+    verify_output(capfd, r"""*   Merge tag 'reach'
 |\
 | \
 |  \

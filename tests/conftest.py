@@ -10,7 +10,6 @@ from asciidag.graph import Graph
 from asciidag.node import Node
 
 
-# FIXME: fails to capture stdout
 @pytest.fixture
 def graph():
     """Fixture to supply an empty graph."""
