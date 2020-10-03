@@ -1,3 +1,4 @@
+graft examples
 graft images
 graft src
 graft tests

@@ -3,7 +3,6 @@ fix/add tests
 add macOS CI and maybe older ubuntu (thus more versions)
 add more flake8/pylint plugins
 sequence.once() uniqueness
-does demo belong in tests?
 get rid of pytest-runner? (use tox or something)?
 add setup_requires setuptools version that supports environment specifiers? wheel? pyproject.toml
   v20.10.0?
