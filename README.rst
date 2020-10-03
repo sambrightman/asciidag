@@ -51,7 +51,7 @@ You likely need to use ``sudo`` for the install unless you work in a
    :alt: Demonstration screenshot
 
 :copyright: © 2016 Sam Brightman
-:license: Mozilla Public License version 2.0, see LICENSE for more details.
+:license: GNU General Public License v2.0, see LICENSE for more details.
 
 .. _Python virtual environment: http://docs.python-guide.org/en/latest/dev/virtualenvs
 .. _Git: https://git-scm.com

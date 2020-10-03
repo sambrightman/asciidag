@@ -60,7 +60,7 @@ def main():
             "Development Status :: 3 - Alpha",
             "Environment :: Console",
             "Intended Audience :: Developers",
-            "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+            "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
             "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 2.6",
             "Programming Language :: Python :: 2.7",
