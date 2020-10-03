@@ -32,6 +32,10 @@ class Node(object):  # pylint: disable=bad-option-value,useless-object-inheritan
         """Return the string representation of the item in the node."""
         return str(self.item)
 
+    def __repr__(self):
+        """Return the unambiguous representation of the node."""
+        return "{}({}, parents={})".format(self.__class__.__name__, repr(self.item), repr(self.parents))
+
     @staticmethod
     def from_dict(dct):
         """Construct a nested list of nodes from a nested dict.
