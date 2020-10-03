@@ -1,6 +1,5 @@
 'commit' -> 'node'
 fix/add tests
-remove pylint/noqa exceptions
 add macOS CI and maybe older ubuntu (thus more versions)
 add more flake8/pylint plugins
 sequence.once() uniqueness

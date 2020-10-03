@@ -31,7 +31,7 @@ class Column(object):  # pylint: disable=bad-option-value,useless-object-inherit
         self.color = color
 
 
-class GraphState(Enum):  # pylint: disable=too-few-public-methods
+class GraphState(Enum):
     """The current state of the state machine."""
 
     PADDING = 0

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=bad-option-value,missing-docstring,missing-module-docstring,missing-function-docstring
+"""Configuration and metadata for setuptools packaging."""
 
 from __future__ import absolute_import, unicode_literals
 from __future__ import division, print_function
@@ -8,7 +8,8 @@ import re
 from setuptools import setup, find_packages
 
 
-def main():  # noqa: D103
+def main():
+    """Entrypoint for setuptools."""
     with open("asciidag/__init__.py") as init:
         metadata = dict(re.findall(r"__([a-z]+)__\s*=\s*['\"]([^'\"]*)['\"]",
                                    init.read()))
@@ -22,7 +23,7 @@ def main():  # noqa: D103
     setup(
         name=metadata["title"],
         version=metadata["version"],
-        description="Draw DAGs (directed acyclic graphs) as ASCII art, à la git log --graph",  # noqa: E501
+        description="Draw DAGs (directed acyclic graphs) as ASCII art, à la git log --graph",
         long_description=readme,
         author=metadata["author"],
         author_email=metadata["email"],
