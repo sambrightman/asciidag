@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 
 def main():
     """Entrypoint for setuptools."""
-    with open("asciidag/__init__.py") as init:
+    with open("src/asciidag/__init__.py") as init:
         metadata = dict(re.findall(r"__([a-z]+)__\s*=\s*['\"]([^'\"]*)['\"]",
                                    init.read()))
 
@@ -28,9 +28,10 @@ def main():
         author=metadata["author"],
         author_email=metadata["email"],
         url=metadata["url"],
-        packages=find_packages(),
-        package_data={metadata["title"]: ["LICENSE"]},
+        packages=find_packages(where='src'),
+        package_dir={'': 'src'},
         include_package_data=True,
+        zip_safe=False,
         setup_requires=[
             'pytest-runner',
         ],
