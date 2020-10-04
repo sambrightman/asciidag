@@ -18,11 +18,13 @@ environment:
 
 build: off
 
+install:
+  - "%PYTHON%\\python.exe -m pip install -U setuptools pip wheel"
+
 test_script:
   - "%PYTHON%\\python.exe setup.py test"
 
 after_test:
-  - "%PYTHON%\\python.exe -m pip install wheel"
   - "%PYTHON%\\python.exe setup.py sdist bdist_wheel"
 
 artifacts:
