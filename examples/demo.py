@@ -3,8 +3,7 @@
 # pylint: disable=bad-option-value,import-outside-toplevel
 """Demonstration of package functionality."""
 
-from __future__ import absolute_import, unicode_literals
-from __future__ import division, print_function
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 
 def main():

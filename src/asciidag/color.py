@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """ANSI codes used for coloured console output."""
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+
 COLOR_NORMAL = ""
 COLOR_RESET = "\033[m"
 COLOR_BOLD = "\033[1m"
