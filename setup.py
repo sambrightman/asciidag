@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import re
+from io import open
 from setuptools import setup, find_packages
 try:
     from urllib.parse import urlparse, urljoin
@@ -20,17 +21,17 @@ def rewrite_relative_images(base_url, text):
 
 def main():
     """Entrypoint for setuptools."""
-    with open("src/asciidag/__init__.py") as init:
+    with open("src/asciidag/__init__.py", encoding="utf-8") as init:
         metadata = dict(re.findall(r"__([a-z]+)__\s*=\s*['\"]([^'\"]*)['\"]",
                                    init.read()))
 
     if not metadata:
         raise RuntimeError("Cannot find metadata information")
 
-    with open("README.rst") as readme:
+    with open("README.rst", encoding="utf-8") as readme_file:
         relative_package_path = "{}/{}".format(urlparse(metadata["url"]).path, "package/")
         image_base_url = urljoin("https://raw.githubusercontent.com/", relative_package_path)
-        readme = rewrite_relative_images(image_base_url, readme.read())
+        readme = rewrite_relative_images(image_base_url, readme_file.read())
 
     setup(
         name=metadata["title"],
