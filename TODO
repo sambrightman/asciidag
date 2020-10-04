@@ -11,3 +11,4 @@ add setup_requires setuptools version that supports environment specifiers? whee
   v38.6.1? https://github.com/pypa/setuptools/issues/1292 broken in 38.6.0
 port new git changes/look for forks
 automate releases
+enforce check that README.rst (or any file) is not out-of-date before commit/publish

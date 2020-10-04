@@ -35,6 +35,7 @@ def main():
 
     tests_require = [
         "astroid<2; python_version<'2.7' or (python_version>='3' and python_version<'3.4')",
+        "docutils",
         "flake8; (python_version>='2.7' and python_version<'3') or python_version>='3.4'",
         "flake8<3.8; python_version<'2.7' or (python_version>='3' and python_version<'3.4')",
         "flake8_docstrings",
