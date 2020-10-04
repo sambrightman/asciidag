@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """.. include:: ../README.rst"""  # noqa: D400
 
 from __future__ import absolute_import, division, print_function, unicode_literals
