@@ -5,6 +5,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import re
 from setuptools import setup, find_packages
+try:
+    from urllib.parse import urlparse, urljoin
+except ImportError:
+    from urlparse import urlparse, urljoin
+
+
+def rewrite_relative_images(base_url, text):
+    """Rewrite project-relative image links to absolute URLs for PyPI."""
+    return re.sub(r"(?<=\.\. image:: )(?P<relative_path>\S+)",
+                  lambda match: urljoin(base_url, urlparse(match.group("relative_path")).path),
+                  text)
 
 
 def main():
@@ -17,7 +28,9 @@ def main():
         raise RuntimeError("Cannot find metadata information")
 
     with open("README.rst") as readme:
-        readme = readme.read()
+        relative_package_path = "{}/{}".format(urlparse(metadata["url"]).path, "package/")
+        image_base_url = urljoin("https://raw.githubusercontent.com/", relative_package_path)
+        readme = rewrite_relative_images(image_base_url, readme.read())
 
     setup(
         name=metadata["title"],
