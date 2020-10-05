@@ -29,8 +29,8 @@ def main():
         raise RuntimeError("Cannot find metadata information")
 
     with open("README.rst", encoding="utf-8") as readme_file:
-        relative_package_path = "{}/{}".format(urlparse(metadata["url"]).path, "package/")
-        image_base_url = urljoin("https://raw.githubusercontent.com/", relative_package_path)
+        relative_path = "{}/{}".format(urlparse(metadata["url"]).path, "master/")
+        image_base_url = urljoin("https://raw.githubusercontent.com/", relative_path)
         readme = rewrite_relative_images(image_base_url, readme_file.read())
 
     tests_require = [
