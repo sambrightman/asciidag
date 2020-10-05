@@ -1,6 +1,6 @@
 'commit' -> 'node'
 fix/add tests
-add macOS CI and maybe older ubuntu (thus more versions)
+add macOS CI
 add more flake8/pylint plugins
 sequence.once() uniqueness
 get rid of pytest-runner? (use tox or something)?
