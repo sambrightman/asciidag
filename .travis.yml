@@ -17,3 +17,7 @@ before_install:
 install:
   - pip install .
 script: python setup.py test
+after_success:
+  - pip install -U coveralls codecov
+  - coveralls
+  - codecov
