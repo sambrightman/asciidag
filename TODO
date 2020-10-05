@@ -1,6 +1,15 @@
-commit -> node
-tests
-remove pylint/noqa exceptions
+'commit' -> 'node'
+fix/add tests
+add macOS CI
 add more flake8/pylint plugins
 sequence.once() uniqueness
-does demo belong in tests?
+get rid of pytest-runner? (use tox or something)?
+add setup_requires setuptools version that supports environment specifiers? wheel? pyproject.toml
+  v20.10.0?
+  v30.3.0? for setup.cfg supporting setup.py options (doubtful)
+  v36.2.0? https://github.com/pypa/setuptools/issues/1081
+  v38.6.1? https://github.com/pypa/setuptools/issues/1292 broken in 38.6.0
+port new git changes/look for forks
+automate releases
+enforce check that README.rst (or any file) is not out-of-date before commit/publish
+remove disable=fixme

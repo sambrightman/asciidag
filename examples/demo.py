@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=bad-option-value,import-outside-toplevel
 """Demonstration of package functionality."""
 
-from __future__ import absolute_import, unicode_literals
-from __future__ import division, print_function
-
-from asciidag.graph import Graph
-from asciidag.node import Node
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 
 def main():
     """Run a simple demo of the package's functionality."""
+    # start-after
+    from asciidag.graph import Graph
+    from asciidag.node import Node
+
     graph = Graph()
 
     root = Node('root')
@@ -36,6 +37,7 @@ def main():
     ]
 
     graph.show_nodes(tips)
+    # end-before
 
 
 if __name__ == '__main__':

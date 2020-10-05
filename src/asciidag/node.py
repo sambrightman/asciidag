@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Individual items within a DAG."""
 
-from __future__ import absolute_import, unicode_literals
-from __future__ import division, print_function
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 
 class InvalidNodeException(Exception):
@@ -31,6 +30,10 @@ class Node(object):  # pylint: disable=bad-option-value,useless-object-inheritan
     def __str__(self):
         """Return the string representation of the item in the node."""
         return str(self.item)
+
+    def __repr__(self):
+        """Return the unambiguous representation of the node."""
+        return "{}({}, parents={})".format(self.__class__.__name__, repr(self.item), repr(self.parents))
 
     @staticmethod
     def from_dict(dct):

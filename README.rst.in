@@ -52,36 +52,10 @@ Usage
 ``examples/demo.py`` is included in the installation directory and is
 executable. The core functionality is:
 
-.. code:: python
-   
-       from asciidag.graph import Graph
-       from asciidag.node import Node
-   
-       graph = Graph()
-   
-       root = Node('root')
-       grandpa = Node('grandpa', parents=[root])
-       tips = [
-           Node('child', parents=[
-               Node('mom', parents=[
-                   Node('grandma', parents=[
-                       Node('greatgrandma', parents=[]),
-                   ]),
-                   grandpa,
-               ]),
-               Node('dad', parents=[
-                   Node('bill', parents=[
-                       Node('martin'),
-                       Node('james'),
-                       Node('paul'),
-                       Node('jon'),
-                   ])]),
-               Node('stepdad', parents=[grandpa]),
-           ]),
-           Node('foo', [Node('bar')]),
-       ]
-   
-       graph.show_nodes(tips)
+.. include:: examples/demo.py
+   :code: python
+   :start-after: # start-after
+   :end-before: # end-before
 
 Output:
 

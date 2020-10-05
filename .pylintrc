@@ -5,4 +5,4 @@ min-public-methods=0
 max-line-length=120
 
 [MESSAGES CONTROL]
-disable=fixme,no-else-return
+disable=fixme
