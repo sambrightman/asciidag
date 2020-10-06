@@ -12,7 +12,7 @@ python:
   - "pypy3"
 before_install:
   - pip install -U pip setuptools virtualenvwrapper
-  - source $(which virtualenvwrapper.sh)
+  - source virtualenvwrapper.sh
   - wipeenv
 install:
   - pip install .
