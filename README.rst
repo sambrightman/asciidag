@@ -1,7 +1,7 @@
 asciidag - draw DAGs as ASCII art
 =================================
 
-|build-status| |win-build-status| |coverage| |pypi-version| |pypi-wheel|
+|build-status| |win-build-status| |coveralls-coverage| |codecov-coverage| |pypi-version| |pypi-wheel|
 
 .. |build-status| image:: https://travis-ci.org/sambrightman/asciidag.svg?branch=master
     :target: https://travis-ci.org/sambrightman/asciidag
@@ -11,9 +11,13 @@ asciidag - draw DAGs as ASCII art
     :target: https://ci.appveyor.com/project/sambrightman/asciidag
     :alt: AppVeyor CI status
 
-.. |coverage| image:: https://coveralls.io/repos/github/sambrightman/asciidag/badge.svg?branch=master
+.. |coveralls-coverage| image:: https://coveralls.io/repos/github/sambrightman/asciidag/badge.svg?branch=master
     :target: https://coveralls.io/github/sambrightman/asciidag?branch=master
-    :alt: Coverage
+    :alt: Coveralls coverage
+
+.. |codecov-coverage| image:: https://codecov.io/gh/sambrightman/asciidag/branch/master/graph/badge.svg?token=tHv0ZDOJKA
+    :target: https://codecov.io/gh/sambrightman/asciidag
+    :alt: Codecov coverage
 
 .. |pypi-version| image:: https://img.shields.io/pypi/v/asciidag
     :alt: PyPI version
