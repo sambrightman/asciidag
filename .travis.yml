@@ -11,7 +11,7 @@ python:
   - "pypy"
   - "pypy3"
 before_install:
-  - pip install -U pip setuptools virtualenvwrapper
+  - pip install -U pip setuptools wheel virtualenvwrapper
   - source virtualenvwrapper.sh
   - wipeenv
 install:
