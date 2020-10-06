@@ -11,9 +11,13 @@ python:
   - "pypy"
   - "pypy3"
 before_install:
-  - pip install -U pip setuptools virtualenvwrapper
-  - source $(which virtualenvwrapper.sh)
+  - pip install -U pip setuptools wheel virtualenvwrapper
+  - source virtualenvwrapper.sh
   - wipeenv
 install:
   - pip install .
 script: python setup.py test
+after_success:
+  - pip install -U coveralls codecov
+  - coveralls
+  - codecov
