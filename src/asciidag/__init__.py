@@ -4,7 +4,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 __title__ = "asciidag"
-__version__ = "0.2.0"
+__version__ = "0.3.0.dev0"
 __copyright__ = "Copyright 2016 Sam Brightman"
 __license__ = "GPL-2.0-only"
 __author__ = "Sam Brightman"
