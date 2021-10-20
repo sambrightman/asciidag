@@ -20,6 +20,7 @@ asciidag - draw DAGs as ASCII art
     :alt: Codecov coverage
 
 .. |pypi-version| image:: https://img.shields.io/pypi/v/asciidag
+    :target: https://pypi.org/project/asciidag/
     :alt: PyPI version
 
 .. |pypi-wheel| image:: https://img.shields.io/pypi/wheel/asciidag
