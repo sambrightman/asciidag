@@ -479,17 +479,23 @@ class Graph(object):  # pylint: disable=too-many-instance-attributes,bad-option-
 
     # Draw an octopus merge and return the number of characters written.
     def _draw_octopus_merge(self):
-        # Here dashless_commits represents the number of parents
-        # which don't need to have dashes (because their edges fit
-        # neatly under the commit).
-        dashless_commits = 2
-        num_dashes = ((self.num_parents - dashless_commits) * 2) - 1
-        for i in range(num_dashes):
-            col_num = i // 2 + dashless_commits + self.commit_index
-            self._write_column(self.new_columns[col_num], '-')
-        col_num = num_dashes // 2 + dashless_commits + self.commit_index
-        self._write_column(self.new_columns[col_num], '.')
-        return num_dashes + 1
+        # First two parents don't need dashes because their edges fit
+        # neatly under the commit
+        parent_stack = list(reversed(list(self._interesting_parents())[2:]))
+        num_chars = 0
+        while parent_stack:
+            parent = parent_stack.pop()
+            assert parent, 'parent is not valid'
+            par_column = self._find_new_column_by_commit(parent)
+            assert par_column, 'parent column not found'
+            self._write_column(par_column, '-')
+            num_chars += 1
+            if parent_stack:
+                self._write_column(par_column, '-')
+                num_chars += 1
+            else:
+                self._write_column(par_column, '.')
+        return num_chars
 
     def _output_commit_line(self):  # noqa: C901 pylint: disable=too-many-branches
         # Output the row containing this commit
